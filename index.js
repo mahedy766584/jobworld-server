@@ -97,14 +97,32 @@ async function run() {
             }
         })
 
+        //sorting
         app.get('/bidJob', async(req, res) =>{
             console.log(req.query.email)
+
+            //http://localhost:5001/bidJob?sortField=status&sortOrder=asc
+
+            let queryObj = {};
+            let sortObj = {};
+
+            const status = req.query.status;
+            const sortField = req.query.sortField;
+            const sortOrder = req.query.sortOrder;
+
+            if(status){
+                queryObj.status = status
+            }
+            console.log(queryObj,status)
+
+            if(sortField && sortOrder){
+                sortObj[sortField] = sortOrder;
+            }
 
             let query = {}
             if(req.query?.email){
                 query = {userEmail: req.query.email}
             }
-            console.log(query)
 
             // let buyer = {};
             // if(req.query?.email){
@@ -112,7 +130,7 @@ async function run() {
             // }
             // console.log(buyer)
 
-            const result = await bidCollection.find(query).toArray();
+            const result = await bidCollection.find(query, queryObj).sort(sortObj).toArray();
             res.send(result)
         })
 
